@@ -18,8 +18,57 @@ or
 yarn add any-bucket
 ```
 
-## Providers
+## Usage
 
+All providers implement the `Bucket` interface, which provides the following methods:
+
+```typescript
+import { BufferEncodingOption } from 'fs';
+
+interface Bucket {
+  /**
+   * List all files in the bucket.
+   */
+  list(folder?: string): Promise<string[]>;
+
+  /**
+   * Check if a file exists in the bucket.
+   *
+   * @param key The path to the file.
+   */
+  has(key: string): Promise<boolean>;
+
+  /**
+   * Get the contents of a file (as Buffer).
+   *
+   * @param key The path to the file.
+   */
+  get(key: string): Promise<Uint8Array>;
+
+  /**
+   * Get the contents of a file (as string).
+   *
+   * @param key The path to the file.
+   * @param encoding The encoding to use ('utf8', etc).
+   */
+  get(key: string, encoding: BufferEncodingOption): Promise<string>;
+
+  /**
+   * Set the contents of a file.
+   *
+   * @param key The path to the file.
+   * @param content The contents of the file.
+   */
+  set(key: string, content: string | Uint8Array): Promise<void>;
+
+  /**
+   * Delete a file.
+   *
+   * @param key The path to the file.
+   */
+  delete(key: string): Promise<void>;
+}
+```
 
 ### Local Storage
 
@@ -47,13 +96,9 @@ await localBucket.delete('file.txt');
 
 ### Amazon S3
 
-#### Installation
-
 ```shell
 npm install @aws-sdk/client-s3
 ```
-
-#### Usage
 
 The `S3Bucket` class provides an implementation for [Amazon S3 storage](https://aws.amazon.com/s3/). It requires the AWS
 SDK to be installed and configured. Here's an example of how to use it:
@@ -82,13 +127,9 @@ await s3Bucket.delete('file.txt');
 
 ### Azure Blob Storage
 
-#### Installation
-
 ```shell
 npm install @azure/storage-blob
 ```
-
-#### Usage
 
 The `AzureBucket` class provides an implementation for
 [Azure Blob Storage](https://azure.microsoft.com/en-us/products/storage/blobs). It requires the `@azure/storage-blob`
@@ -118,13 +159,9 @@ await azureBucket.delete('file.txt');
 
 ### Google Cloud Storage
 
-#### Installation
-
 ```shell
 npm install @google-cloud/storage
 ```
-
-#### Usage
 
 The `GCSBucket` class provides an implementation for [Google Cloud Storage](https://cloud.google.com/storage). It
 requires the `@google-cloud/storage` package to be installed and authenticated. Here's an example of how to use it:

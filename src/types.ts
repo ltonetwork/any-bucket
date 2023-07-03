@@ -6,7 +6,7 @@ export interface Bucket {
   get(key: string, encoding?: null): Promise<Uint8Array>;
   get(key: string, encoding: BufferEncoding): Promise<string>;
 
-  set(key: string, value: string | Uint8Array): Promise<void>;
+  set(key: string, content: string | Uint8Array): Promise<void>;
 
   delete(key: string): Promise<void>;
 }

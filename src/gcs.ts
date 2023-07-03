@@ -1,4 +1,4 @@
-import { Storage, Bucket as StorageBucket, StorageOptions } from '@google-cloud/storage';
+import { Storage, Bucket as StorageBucket } from '@google-cloud/storage';
 import { Bucket } from './types';
 
 export default class GCSBucket implements Bucket {
@@ -29,9 +29,9 @@ export default class GCSBucket implements Bucket {
     return encoding ? data.toString(encoding) : data;
   }
 
-  async set(key: string, value: string | Uint8Array): Promise<void> {
+  async set(key: string, content: string | Uint8Array): Promise<void> {
     const file = this.bucket.file(key);
-    await file.save(typeof value === 'string' ? value : Buffer.from(value));
+    await file.save(typeof content === 'string' ? content : Buffer.from(content));
   }
 
   async delete(key: string): Promise<void> {

@@ -23,12 +23,12 @@ export default class LocalBucket implements Bucket {
     return fs.readFile(this.path(key), encoding);
   }
 
-  async set(key: string, value: string | Uint8Array): Promise<void> {
+  async set(key: string, content: string | Uint8Array): Promise<void> {
     if (key === '') throw new Error('key is empty');
     const path = this.path(key);
 
     await fs.mkdir(dirname(path), { recursive: true });
-    await fs.writeFile(path, value);
+    await fs.writeFile(path, content);
   }
 
   async delete(key: string): Promise<void> {

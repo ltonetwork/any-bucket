@@ -51,11 +51,11 @@ export default class S3Bucket implements Bucket {
       : await content.transformToByteArray();
   }
 
-  async set(key: string, value: string | Uint8Array): Promise<void> {
+  async set(key: string, content: string | Uint8Array): Promise<void> {
     const params = {
       Bucket: this.bucketName,
       Key: key,
-      Body: value,
+      Body: content,
     };
 
     await this.s3.putObject(params);
