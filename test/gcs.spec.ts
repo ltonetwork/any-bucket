@@ -6,6 +6,7 @@ import { Bucket as StorageBucket, File as StorageFile, Storage } from '@google-c
 describe('GCSBucket', () => {
   let gcsBucket: SinonStubbedInstance<StorageBucket>;
   let bucket: GCSBucket;
+  let bucketSub: GCSBucket;
 
   beforeEach(() => {
     gcsBucket = createStubInstance(StorageBucket);
@@ -13,6 +14,7 @@ describe('GCSBucket', () => {
     stub(storage, 'bucket').returns(gcsBucket);
 
     bucket = new GCSBucket(storage as any, 'bucketName');
+    bucketSub = new GCSBucket(storage as any, 'bucketName/sub');
   });
 
   afterEach(() => {
@@ -38,13 +40,29 @@ describe('GCSBucket', () => {
       expect(gcsBucket.getFiles.firstCall.args[0]).to.deep.equal({ prefix: 'folder/' });
     });
 
-    it('should list all files in the gcsBucket if no folder is provided', async () => {
+    it('should list all files in the bucket if no folder is provided', async () => {
       const files = await bucket.list();
 
       expect(files).to.deep.equal(['file1.txt', 'file2.txt']);
 
       expect(gcsBucket.getFiles.calledOnce).to.be.true;
       expect(gcsBucket.getFiles.firstCall.args[0]).to.deep.equal({});
+    });
+
+    describe('with prefix', () => {
+      it('should list files in a sub folder', async () => {
+        await bucketSub.list('folder');
+
+        expect(gcsBucket.getFiles.calledOnce).to.be.true;
+        expect(gcsBucket.getFiles.firstCall.args[0]).to.deep.equal({ prefix: 'sub/folder/' });
+      });
+
+      it('should list all files in the main folder if no folder is provided', async () => {
+        await bucketSub.list();
+
+        expect(gcsBucket.getFiles.calledOnce).to.be.true;
+        expect(gcsBucket.getFiles.firstCall.args[0]).to.deep.equal({ prefix: 'sub/' });
+      });
     });
   });
 
@@ -79,6 +97,17 @@ describe('GCSBucket', () => {
 
       expect(gcsFile.exists.calledOnce).to.be.true;
     });
+
+    describe('with prefix', () => {
+      it('should return true if the key exists', async () => {
+        gcsFile.exists.resolves([true]);
+
+        await bucketSub.has('file1.txt');
+
+        expect(gcsBucket.file.calledOnce).to.be.true;
+        expect(gcsBucket.file.firstCall.args[0]).to.deep.equal('sub/file1.txt');
+      });
+    });
   });
 
   describe('get', () => {
@@ -111,6 +140,15 @@ describe('GCSBucket', () => {
       expect(gcsBucket.file.calledOnce).to.be.true;
       expect(gcsBucket.file.firstCall.args[0]).to.be.equal('file1.txt');
     });
+
+    describe('with prefix', () => {
+      it('should return the file content', async () => {
+        await bucketSub.get('file1.txt');
+
+        expect(gcsBucket.file.calledOnce).to.be.true;
+        expect(gcsBucket.file.firstCall.args[0]).to.be.equal('sub/file1.txt');
+      });
+    });
   });
 
   describe('set', () => {
@@ -142,6 +180,15 @@ describe('GCSBucket', () => {
       expect(gcsFile.save.calledOnce).to.be.true;
       expect(gcsFile.save.firstCall.args[0]).to.deep.equal(Uint8Array.from([1, 2, 3, 4]));
     });
+
+    describe('with prefix', () => {
+      it('should put an object with a string value', async () => {
+        await bucketSub.set('file1.txt', 'content 1');
+
+        expect(gcsBucket.file.calledOnce).to.be.true;
+        expect(gcsBucket.file.firstCall.args[0]).to.equal('sub/file1.txt');
+      });
+    });
   });
 
   describe('delete', () => {
@@ -161,6 +208,15 @@ describe('GCSBucket', () => {
       expect(gcsBucket.file.firstCall.args[0]).to.be.equal('file1.txt');
 
       expect(gcsFile.delete.calledOnce).to.be.true;
+    });
+
+    describe('with prefix', () => {
+      it('should delete an object with the specified key', async () => {
+        await bucketSub.delete('file1.txt');
+
+        expect(gcsBucket.file.calledOnce).to.be.true;
+        expect(gcsBucket.file.firstCall.args[0]).to.be.equal('sub/file1.txt');
+      });
     });
   });
 });

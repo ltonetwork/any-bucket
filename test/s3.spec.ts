@@ -1,22 +1,24 @@
 import { expect } from 'chai';
-import { spy, stub, SinonStub } from 'sinon';
+import { spy, SinonStub, SinonStubbedInstance, createStubInstance } from 'sinon';
 import { S3 } from '@aws-sdk/client-s3';
 import S3Bucket from '../src/s3';
 
 describe('S3Bucket', () => {
-  let s3Client;
-  let bucket;
+  let s3Client: SinonStubbedInstance<S3>;
+  let bucket: S3Bucket;
+  let bucketSub: S3Bucket;
 
   beforeEach(() => {
-    s3Client = new S3({});
+    s3Client = createStubInstance(S3);
     bucket = new S3Bucket(s3Client, 'bucketName');
+    bucketSub = new S3Bucket(s3Client, 'bucketName/sub');
   });
 
   describe('list', () => {
     let listObjectsV2Stub: SinonStub;
 
     beforeEach(() => {
-      listObjectsV2Stub = stub(s3Client, 'listObjectsV2').resolves({
+      listObjectsV2Stub = s3Client.listObjectsV2.resolves({
         Contents: [
           { Key: 'file1.txt' },
           { Key: 'file2.txt' },
@@ -56,52 +58,83 @@ describe('S3Bucket', () => {
         Prefix: '',
       });
     });
+
+    describe('with prefix', () => {
+      it('should list files in a sub folder', async () => {
+        await bucketSub.list('folder');
+
+        expect(listObjectsV2Stub.calledOnce).to.be.true;
+        expect(listObjectsV2Stub.firstCall.args[0]).to.deep.equal({
+          Bucket: 'bucketName',
+          Delimiter: '/',
+          Prefix: 'sub/folder/',
+        });
+      });
+
+      it('should list all files in the main folder if no folder is provided', async () => {
+        await bucketSub.list();
+
+        expect(listObjectsV2Stub.calledOnce).to.be.true;
+        expect(listObjectsV2Stub.firstCall.args[0]).to.deep.equal({
+          Bucket: 'bucketName',
+          Delimiter: '/',
+          Prefix: 'sub/',
+        });
+      });
+    });
   });
 
   describe('has', () => {
-    let headObjectStub: SinonStub;
-
-    beforeEach(() => {
-      headObjectStub = stub(s3Client, 'headObject');
-    });
-
-    afterEach(() => {
-      headObjectStub.restore();
-    });
-
     it('should return true if the key exists', async () => {
-      headObjectStub.resolves();
+      s3Client.headObject.resolves();
 
       const exists = await bucket.has('file1.txt');
-
-      expect(headObjectStub.calledOnce).to.be.true;
       expect(exists).to.be.true;
+
+      expect(s3Client.headObject.calledOnce).to.be.true;
+      expect(s3Client.headObject.firstCall.args[0]).to.deep.equal({
+        Bucket: 'bucketName',
+        Key: 'file1.txt',
+      });
     });
 
     it('should return false if the key does not exist', async () => {
-      headObjectStub.returns(Promise.reject({ code: 'NotFound' }));
+      s3Client.headObject.rejects({ code: 'NotFound' });
 
       const exists = await bucket.has('nonexistent.txt');
-
-      expect(headObjectStub.calledOnce).to.be.true;
       expect(exists).to.be.false;
+
+      expect(s3Client.headObject.calledOnce).to.be.true;
+      expect(s3Client.headObject.firstCall.args[0]).to.deep.equal({
+        Bucket: 'bucketName',
+        Key: 'nonexistent.txt',
+      });
+    });
+
+    describe('with prefix', () => {
+      it('should return true if the key exists', async () => {
+        s3Client.headObject.resolves();
+
+        await bucketSub.has('file1.txt');
+
+        expect(s3Client.headObject.calledOnce).to.be.true;
+        expect(s3Client.headObject.firstCall.args[0]).to.deep.equal({
+          Bucket: 'bucketName',
+          Key: 'sub/file1.txt',
+        });
+      });
     });
   });
 
   describe('get', () => {
-    let getObjectStub: SinonStub;
+    // noinspection JSUnusedLocalSymbols
     const body = {
       transformToString: (encoding: BufferEncoding) => 'content 1',
       transformToByteArray: () => Buffer.from('content 1'),
     };
 
     beforeEach(() => {
-      getObjectStub = stub(s3Client, 'getObject');
-      getObjectStub.resolves({ Body: body });
-    });
-
-    afterEach(() => {
-      getObjectStub.restore();
+      s3Client.getObject.resolves({ Body: body });
     });
 
     it('should return the file content as a Buffer', async () => {
@@ -109,7 +142,12 @@ describe('S3Bucket', () => {
 
       const content = await bucket.get('file1.txt');
 
-      expect(getObjectStub.calledOnce).to.be.true;
+      expect(s3Client.getObject.calledOnce).to.be.true;
+      expect(s3Client.getObject.firstCall.args[0]).to.deep.equal({
+        Bucket: 'bucketName',
+        Key: 'file1.txt',
+      });
+
       expect(content).to.be.an.instanceOf(Buffer);
       expect(content.toString()).to.equal('content 1');
 
@@ -121,56 +159,86 @@ describe('S3Bucket', () => {
 
       const content = await bucket.get('file1.txt', 'utf-8');
 
-      expect(getObjectStub.calledOnce).to.be.true;
+      expect(s3Client.getObject.calledOnce).to.be.true;
+      expect(s3Client.getObject.firstCall.args[0]).to.deep.equal({
+        Bucket: 'bucketName',
+        Key: 'file1.txt',
+      });
+
       expect(content).to.be.a('string');
       expect(content).to.equal('content 1');
 
       expect(transformToString.calledOnce).to.be.true;
       expect(transformToString.firstCall.args[0]).to.equal('utf-8');
     });
+
+    describe('with prefix', () => {
+      it('should return the file content as a Buffer', async () => {
+        await bucketSub.get('file1.txt');
+
+        expect(s3Client.getObject.calledOnce).to.be.true;
+        expect(s3Client.getObject.firstCall.args[0]).to.deep.equal({
+          Bucket: 'bucketName',
+          Key: 'sub/file1.txt',
+        });
+      });
+    });
   });
 
   describe('set', () => {
-    let putObjectStub: SinonStub;
-
     beforeEach(() => {
-      putObjectStub = stub(s3Client, 'putObject').resolves();
-    });
-
-    afterEach(() => {
-      putObjectStub.restore();
+      s3Client.putObject.resolves();
     });
 
     it('should put an object with the specified key and value', async () => {
       await bucket.set('file1.txt', 'content 1');
 
-      expect(putObjectStub.calledOnce).to.be.true;
-      expect(putObjectStub.firstCall.args[0]).to.deep.equal({
+      expect(s3Client.putObject.calledOnce).to.be.true;
+      expect(s3Client.putObject.firstCall.args[0]).to.deep.equal({
         Bucket: 'bucketName',
         Key: 'file1.txt',
         Body: 'content 1',
       });
     });
+
+    describe('with prefix', () => {
+      it('should put an object with the specified key and value', async () => {
+        await bucketSub.set('file1.txt', 'content 1');
+
+        expect(s3Client.putObject.calledOnce).to.be.true;
+        expect(s3Client.putObject.firstCall.args[0]).to.deep.equal({
+          Bucket: 'bucketName',
+          Key: 'sub/file1.txt',
+          Body: 'content 1',
+        });
+      });
+    });
   });
 
   describe('delete', () => {
-    let deleteObjectStub: SinonStub;
-
     beforeEach(() => {
-      deleteObjectStub = stub(s3Client, 'deleteObject').resolves();
-    });
-
-    afterEach(() => {
-      deleteObjectStub.restore();
+      s3Client.deleteObject.resolves();
     });
 
     it('should delete an object with the specified key', async () => {
       await bucket.delete('file1.txt');
 
-      expect(deleteObjectStub.calledOnce).to.be.true;
-      expect(deleteObjectStub.firstCall.args[0]).to.deep.equal({
+      expect(s3Client.deleteObject.calledOnce).to.be.true;
+      expect(s3Client.deleteObject.firstCall.args[0]).to.deep.equal({
         Bucket: 'bucketName',
         Key: 'file1.txt',
+      });
+    });
+
+    describe('with prefix', () => {
+      it('should delete an object with the specified key', async () => {
+        await bucketSub.delete('file1.txt');
+
+        expect(s3Client.deleteObject.calledOnce).to.be.true;
+        expect(s3Client.deleteObject.firstCall.args[0]).to.deep.equal({
+          Bucket: 'bucketName',
+          Key: 'sub/file1.txt',
+        });
       });
     });
   });

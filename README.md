@@ -45,7 +45,7 @@ interface Bucket {
    * @param key The path to the file.
    * @param encoding The encoding to use ('utf8', etc).
    */
-  get(key: string, encoding?: BufferEncodingOption): Promise<Buffer|string>;
+  get(key: string, encoding?: BufferEncodingOption): Promise<Buffer | string>;
 
   /**
    * Set the contents of a file.
@@ -53,7 +53,7 @@ interface Bucket {
    * @param key The path to the file.
    * @param content The contents of the file.
    */
-  set(key: string, content: string | Uint8Array): Promise<void>;
+  set(key: string, content: Uint8Array | string): Promise<void>;
 
   /**
    * Delete a file.
@@ -119,6 +119,13 @@ await s3Bucket.set('file.txt', 'Hello, S3!');
 await s3Bucket.delete('file.txt');
 ```
 
+Instead of a bucket name you can pass a bucket name and a path to the constructor. This will prepend the path
+name to all file paths. For example:
+
+```javascript
+const s3Bucket = new S3Bucket(s3Client, 'my-bucket/my-folder');
+```
+
 ### Azure Blob Storage
 
 ```shell
@@ -152,6 +159,13 @@ await azureBucket.set('file.txt', 'Hello, Azure!');
 await azureBucket.delete('file.txt');
 ```
 
+Instead of a bucket name you can pass a bucket name and a path to the constructor. This will prepend the path
+name to all file paths. For example:
+
+```javascript
+const azureBucket = new AzureBucket(azureClient, 'my-container/my-folder');
+```
+
 ### Google Cloud Storage
 
 ```shell
@@ -181,6 +195,13 @@ console.log(fileContent);
 await gcsBucket.set('file.txt', 'Hello, GCS!');
 
 await gcsBucket.delete('file.txt');
+```
+
+Instead of a bucket name you can pass a bucket name and a path to the constructor. This will prepend the path
+name to all file paths. For example:
+
+```javascript
+const gcsBucket = new GCSBucket(storage, 'my-bucket/my-folder');
 ```
 
 ## Contributing
