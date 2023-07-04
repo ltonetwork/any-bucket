@@ -39,19 +39,13 @@ interface Bucket {
   has(key: string): Promise<boolean>;
 
   /**
-   * Get the contents of a file (as Buffer).
-   *
-   * @param key The path to the file.
-   */
-  get(key: string): Promise<Uint8Array>;
-
-  /**
-   * Get the contents of a file (as string).
+   * Get the contents of a file.
+   * If no encoding is specified, the file contents will be returned as an Uint8Array.
    *
    * @param key The path to the file.
    * @param encoding The encoding to use ('utf8', etc).
    */
-  get(key: string, encoding: BufferEncodingOption): Promise<string>;
+  get(key: string, encoding?: BufferEncodingOption): Promise<Uint8Array|string>;
 
   /**
    * Set the contents of a file.
@@ -105,7 +99,7 @@ SDK to be installed and configured. Here's an example of how to use it:
 
 ```javascript
 import { S3 } from '@aws-sdk/client-s3';
-import LocalBucket from 'any-bucket/s3';
+import S3Bucket from 'any-bucket/s3';
 
 const s3Client = new S3({ /* configure AWS SDK options */ });
 const s3Bucket = new S3Bucket(s3Client, 'my-bucket');
@@ -137,6 +131,7 @@ package to be installed and authenticated. Here's an example of how to use it:
 
 ```javascript
 import { BlobServiceClient } from '@azure/storage-blob';
+import AzureBucket from 'any-bucket/azure';
 
 const connectionString = '<your-connection-string>';
 const azureClient = BlobServiceClient.fromConnectionString(connectionString);
@@ -168,6 +163,7 @@ requires the `@google-cloud/storage` package to be installed and authenticated. 
 
 ```javascript
 import { Storage } from '@google-cloud/storage';
+import GCSBucket from 'any-bucket/gcs';
 
 const storage = new Storage({ /* configure authentication options */ });
 const gcsBucket = new GCSBucket(storage, 'my-bucket');
