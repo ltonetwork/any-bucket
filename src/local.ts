@@ -20,9 +20,9 @@ export default class LocalBucket implements Bucket {
     );
   }
 
-  async get(key: string, encoding?: null): Promise<Uint8Array>;
+  async get(key: string, encoding?: null): Promise<Buffer>;
   async get(key: string, encoding: BufferEncoding): Promise<string>;
-  async get(key: string, encoding?: null | BufferEncoding): Promise<Uint8Array | string> {
+  async get(key: string, encoding?: null | BufferEncoding): Promise<Buffer | string> {
     return fs.readFile(this.path(key), encoding);
   }
 

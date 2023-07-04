@@ -29,15 +29,15 @@ export default class AzureBucket implements Bucket {
     );
   }
 
-  async get(key: string, encoding?: null): Promise<Uint8Array>;
+  async get(key: string, encoding?: null): Promise<Buffer>;
   async get(key: string, encoding: BufferEncoding): Promise<string>;
-  async get(key: string, encoding?: null | BufferEncoding): Promise<Uint8Array | string> {
+  async get(key: string, encoding?: null | BufferEncoding): Promise<Buffer | string> {
     const blobClient = this.container.getBlobClient(key);
 
     const downloadResponse = await blobClient.download();
     const body = await downloadResponse.blobBody;
 
-    return encoding ? await body.text() : new Uint8Array(await body.arrayBuffer());
+    return encoding ? await body.text() : Buffer.from(await body.arrayBuffer());
   }
 
   async set(key: string, content: string | Uint8Array): Promise<void> {

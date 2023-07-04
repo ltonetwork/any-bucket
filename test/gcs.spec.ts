@@ -94,7 +94,7 @@ describe('GCSBucket', () => {
     it('should return the file content as a Buffer', async () => {
       const content = await bucket.get('file1.txt');
 
-      expect(content).to.be.an.instanceOf(Uint8Array);
+      expect(content).to.be.an.instanceOf(Buffer);
       expect(content.byteLength).to.equal(9);
 
       expect(gcsFile.download.calledOnce).to.be.true;

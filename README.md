@@ -40,12 +40,12 @@ interface Bucket {
 
   /**
    * Get the contents of a file.
-   * If no encoding is specified, the file contents will be returned as an Uint8Array.
+   * If no encoding is specified, the file contents will be returned as a buffer.
    *
    * @param key The path to the file.
    * @param encoding The encoding to use ('utf8', etc).
    */
-  get(key: string, encoding?: BufferEncodingOption): Promise<Uint8Array|string>;
+  get(key: string, encoding?: BufferEncodingOption): Promise<Buffer|string>;
 
   /**
    * Set the contents of a file.

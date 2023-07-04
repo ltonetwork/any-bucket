@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as fs from 'node:fs/promises';
 import { expect } from 'chai';
 import * as mock from 'mock-fs';
@@ -60,7 +59,7 @@ describe('LocalBucket', () => {
       const bucket = new LocalBucket('/base/path');
       const content = await bucket.get('file1.txt');
 
-      expect(content).to.be.an.instanceOf(Uint8Array);
+      expect(content).to.be.an.instanceOf(Buffer);
       expect(content.toString()).to.equal('content 1');
     });
 

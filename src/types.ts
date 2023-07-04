@@ -3,7 +3,7 @@ export interface Bucket {
 
   has(key: string): Promise<boolean>;
 
-  get(key: string, encoding?: null): Promise<Uint8Array>;
+  get(key: string, encoding?: null): Promise<Buffer>;
   get(key: string, encoding: BufferEncoding): Promise<string>;
 
   set(key: string, content: string | Uint8Array): Promise<void>;

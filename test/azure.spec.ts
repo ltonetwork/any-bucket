@@ -98,7 +98,7 @@ describe('AzureBucket', () => {
       const content = await bucket.get('file1.txt');
 
       expect(downloadStub.calledOnce).to.be.true;
-      expect(content).to.be.an.instanceOf(Uint8Array);
+      expect(content).to.be.an.instanceOf(Buffer);
       expect(content.byteLength).to.equal(8);
     });
 
