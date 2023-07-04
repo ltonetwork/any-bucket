@@ -5,7 +5,7 @@ export default class AzureBucket implements Bucket {
   private readonly container: ContainerClient;
 
   constructor(client: BlobServiceClient, containerName: string) {
-    this.container = client.getContainerClient(containerName)
+    this.container = client.getContainerClient(containerName);
   }
 
   async list(folder?: string): Promise<string[]> {
@@ -25,12 +25,12 @@ export default class AzureBucket implements Bucket {
 
     return await blobClient.getProperties().then(
       () => true,
-      (error) => error.statusCode === 404 ? false : Promise.reject(error),
+      (error) => (error.statusCode === 404 ? false : Promise.reject(error)),
     );
   }
 
-  async get(key: string, encoding?: null): Promise<Uint8Array>
-  async get(key: string, encoding: BufferEncoding): Promise<string>
+  async get(key: string, encoding?: null): Promise<Uint8Array>;
+  async get(key: string, encoding: BufferEncoding): Promise<string>;
   async get(key: string, encoding?: null | BufferEncoding): Promise<Uint8Array | string> {
     const blobClient = this.container.getBlobClient(key);
 
@@ -44,7 +44,7 @@ export default class AzureBucket implements Bucket {
     const blobClient = this.container.getBlockBlobClient(key);
 
     if (typeof content === 'string') {
-      await blobClient.upload(content, content.length)
+      await blobClient.upload(content, content.length);
     } else {
       await blobClient.uploadData(content);
     }

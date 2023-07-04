@@ -1,6 +1,6 @@
 import * as fs from 'node:fs/promises';
 import { dirname } from 'node:path';
-import { Bucket } from "./types"
+import { Bucket } from './types';
 
 export default class LocalBucket implements Bucket {
   constructor(private readonly basePath: string) {}
@@ -14,11 +14,14 @@ export default class LocalBucket implements Bucket {
   }
 
   async has(key: string): Promise<boolean> {
-    return await fs.access(this.path(key), fs.constants.F_OK).then(() => true, () => false);
+    return await fs.access(this.path(key), fs.constants.F_OK).then(
+      () => true,
+      () => false,
+    );
   }
 
-  async get(key: string, encoding?: null): Promise<Uint8Array>
-  async get(key: string, encoding: BufferEncoding): Promise<string>
+  async get(key: string, encoding?: null): Promise<Uint8Array>;
+  async get(key: string, encoding: BufferEncoding): Promise<string>;
   async get(key: string, encoding?: null | BufferEncoding): Promise<Uint8Array | string> {
     return fs.readFile(this.path(key), encoding);
   }

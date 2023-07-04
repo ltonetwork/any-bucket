@@ -35,8 +35,8 @@ export default class S3Bucket implements Bucket {
     );
   }
 
-  async get(key: string, encoding?: null): Promise<Uint8Array>
-  async get(key: string, encoding: BufferEncoding): Promise<string>
+  async get(key: string, encoding?: null): Promise<Uint8Array>;
+  async get(key: string, encoding: BufferEncoding): Promise<string>;
   async get(key: string, encoding?: null | BufferEncoding): Promise<Uint8Array | string> {
     const params = {
       Bucket: this.bucketName,
@@ -46,9 +46,7 @@ export default class S3Bucket implements Bucket {
     const data = await this.s3.getObject(params);
     const content = data.Body;
 
-    return encoding
-      ? await content.transformToString(encoding)
-      : await content.transformToByteArray();
+    return encoding ? await content.transformToString(encoding) : await content.transformToByteArray();
   }
 
   async set(key: string, content: string | Uint8Array): Promise<void> {

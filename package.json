@@ -3,16 +3,38 @@
   "version": "0.0.0",
   "description": "File storage abstraction layer",
   "author": "Arnold Daniels <arnold@ltonetwork.com>",
-  "repository": "git@github.com:ltonetwork/bucket.git",
+  "repository": "git@github.com:ltonetwork/any-bucket.git",
+  "bugs": "https://github.com/ltonetwork/any-bucket/issues",
   "license": "MIT",
   "scripts": {
     "clean": "rm -rf ./lib",
-    "build": "tsc && tsc -p ./tsconfig.esm.json",
+    "build": "tsc",
     "test": "mocha --require ts-node/register 'test/**/*.spec.ts'",
     "lint": "eslint src --ext .ts,.tsx",
     "lint-fix": "eslint src --ext .ts,.tsx --fix"
   },
   "main": "./lib/index.js",
+  "exports": {
+    ".": {
+      "import": "./lib/index.js"
+    },
+    "./azure": {
+      "import": "./lib/azure.js",
+      "types": "./lib/azure.d.ts"
+    },
+    "./gcs": {
+      "import": "./lib/gcs.js",
+      "types": "./lib/gcs.d.ts"
+    },
+    "./local": {
+      "import": "./lib/local.js",
+      "types": "./lib/local.d.ts"
+    },
+    "./s3": {
+      "import": "./lib/s3.js",
+      "types": "./lib/s3.d.ts"
+    }
+  },
   "files": [
     "lib",
     "src"
@@ -27,6 +49,7 @@
     "@types/node": "^20.3.3",
     "@types/sinon": "^10.0.15",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
+    "@typescript-eslint/parser": "^5.61.0",
     "chai": "^4.3.7",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.8.0",

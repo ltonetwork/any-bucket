@@ -20,8 +20,8 @@ export default class GCSBucket implements Bucket {
     return exists;
   }
 
-  async get(key: string, encoding?: null): Promise<Buffer>
-  async get(key: string, encoding: BufferEncoding): Promise<string>
+  async get(key: string, encoding?: null): Promise<Buffer>;
+  async get(key: string, encoding: BufferEncoding): Promise<string>;
   async get(key: string, encoding?: null | BufferEncoding): Promise<Buffer | string> {
     const file = this.bucket.file(key);
 
