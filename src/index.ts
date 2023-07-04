@@ -1,1 +1,1 @@
-// Import via submodules
+export { Bucket } from './types';
