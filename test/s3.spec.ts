@@ -191,7 +191,7 @@ describe('S3Bucket', () => {
     });
 
     it('should put an object with the specified key and value', async () => {
-      await bucket.set('file1.txt', 'content 1');
+      await bucket.put('file1.txt', 'content 1');
 
       expect(s3Client.putObject.calledOnce).to.be.true;
       expect(s3Client.putObject.firstCall.args[0]).to.deep.equal({
@@ -203,7 +203,7 @@ describe('S3Bucket', () => {
 
     describe('with prefix', () => {
       it('should put an object with the specified key and value', async () => {
-        await bucketSub.set('file1.txt', 'content 1');
+        await bucketSub.put('file1.txt', 'content 1');
 
         expect(s3Client.putObject.calledOnce).to.be.true;
         expect(s3Client.putObject.firstCall.args[0]).to.deep.equal({

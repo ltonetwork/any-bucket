@@ -178,7 +178,7 @@ describe('AzureBucket', () => {
     it('should put an object with the specified key and binary value', async () => {
       blockBlobClient.uploadData.resolves();
 
-      await bucket.set('file1.txt', Uint8Array.from([1, 2, 3]));
+      await bucket.put('file1.txt', Uint8Array.from([1, 2, 3]));
 
       expect(container.getBlockBlobClient.calledOnce).to.be.true;
       expect(container.getBlockBlobClient.firstCall.args[0]).to.equal('file1.txt');
@@ -190,7 +190,7 @@ describe('AzureBucket', () => {
     it('should put an object with the specified key and string value', async () => {
       blockBlobClient.upload.resolves();
 
-      await bucket.set('file1.txt', 'content 1');
+      await bucket.put('file1.txt', 'content 1');
 
       expect(container.getBlockBlobClient.calledOnce).to.be.true;
       expect(container.getBlockBlobClient.firstCall.args[0]).to.equal('file1.txt');
@@ -202,7 +202,7 @@ describe('AzureBucket', () => {
 
     describe('with prefix', () => {
       it('should put an object with the specified key and value', async () => {
-        await bucketSub.set('file1.txt', 'content 1');
+        await bucketSub.put('file1.txt', 'content 1');
 
         expect(container.getBlockBlobClient.calledOnce).to.be.true;
         expect(container.getBlockBlobClient.firstCall.args[0]).to.equal('sub/file1.txt');

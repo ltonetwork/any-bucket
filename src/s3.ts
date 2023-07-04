@@ -61,7 +61,7 @@ export default class S3Bucket implements Bucket {
     return encoding ? await content.transformToString(encoding) : Buffer.from(await content.transformToByteArray());
   }
 
-  async set(key: string, content: string | Uint8Array): Promise<void> {
+  async put(key: string, content: string | Uint8Array): Promise<void> {
     const params = {
       Bucket: this.bucketName,
       Key: this.path(key),

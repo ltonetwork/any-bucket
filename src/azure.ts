@@ -48,7 +48,7 @@ export default class AzureBucket implements Bucket {
     return encoding ? await body.text() : Buffer.from(await body.arrayBuffer());
   }
 
-  async set(key: string, content: string | Uint8Array): Promise<void> {
+  async put(key: string, content: string | Uint8Array): Promise<void> {
     const blobClient = this.container.getBlockBlobClient(this.path(key));
 
     if (typeof content === 'string') {

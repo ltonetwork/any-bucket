@@ -162,7 +162,7 @@ describe('GCSBucket', () => {
     });
 
     it('should put an object with a string value', async () => {
-      await bucket.set('file1.txt', 'content 1');
+      await bucket.put('file1.txt', 'content 1');
 
       expect(gcsBucket.file.calledOnce).to.be.true;
       expect(gcsBucket.file.firstCall.args[0]).to.equal('file1.txt');
@@ -172,7 +172,7 @@ describe('GCSBucket', () => {
     });
 
     it('should put an object with a binary value', async () => {
-      await bucket.set('file1.txt', Uint8Array.from([1, 2, 3, 4]));
+      await bucket.put('file1.txt', Uint8Array.from([1, 2, 3, 4]));
 
       expect(gcsBucket.file.calledOnce).to.be.true;
       expect(gcsBucket.file.firstCall.args[0]).to.equal('file1.txt');
@@ -183,7 +183,7 @@ describe('GCSBucket', () => {
 
     describe('with prefix', () => {
       it('should put an object with a string value', async () => {
-        await bucketSub.set('file1.txt', 'content 1');
+        await bucketSub.put('file1.txt', 'content 1');
 
         expect(gcsBucket.file.calledOnce).to.be.true;
         expect(gcsBucket.file.firstCall.args[0]).to.equal('sub/file1.txt');

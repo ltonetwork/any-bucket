@@ -53,7 +53,7 @@ interface Bucket {
    * @param key The path to the file.
    * @param content The contents of the file.
    */
-  set(key: string, content: Uint8Array | string): Promise<void>;
+  put(key: string, content: Uint8Array | string): Promise<void>;
 
   /**
    * Delete a file.
@@ -83,7 +83,7 @@ console.log(hasFile);
 const fileContent = await localBucket.get('file.txt');
 console.log(fileContent);
 
-await localBucket.set('file.txt', 'Hello, World!');
+await localBucket.put('file.txt', 'Hello, World!');
 
 await localBucket.delete('file.txt');
 ```
@@ -114,7 +114,7 @@ console.log(hasFile);
 const fileContent = await s3Bucket.get('file.txt');
 console.log(fileContent);
 
-await s3Bucket.set('file.txt', 'Hello, S3!');
+await s3Bucket.put('file.txt', 'Hello, S3!');
 
 await s3Bucket.delete('file.txt');
 ```
@@ -154,7 +154,7 @@ console.log(hasFile);
 const fileContent = await azureBucket.get('file.txt');
 console.log(fileContent);
 
-await azureBucket.set('file.txt', 'Hello, Azure!');
+await azureBucket.put('file.txt', 'Hello, Azure!');
 
 await azureBucket.delete('file.txt');
 ```
@@ -192,7 +192,7 @@ console.log(hasFile);
 const fileContent = await gcsBucket.get('file.txt');
 console.log(fileContent);
 
-await gcsBucket.set('file.txt', 'Hello, GCS!');
+await gcsBucket.put('file.txt', 'Hello, GCS!');
 
 await gcsBucket.delete('file.txt');
 ```

@@ -26,7 +26,7 @@ export default class LocalBucket implements Bucket {
     return fs.readFile(this.path(key), encoding);
   }
 
-  async set(key: string, content: string | Uint8Array): Promise<void> {
+  async put(key: string, content: string | Uint8Array): Promise<void> {
     if (key === '') throw new Error('key is empty');
     const path = this.path(key);
 

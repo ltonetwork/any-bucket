@@ -78,7 +78,7 @@ describe('LocalBucket', () => {
       const key = 'new-file.txt';
       const value = 'new file content';
 
-      await bucket.set(key, value);
+      await bucket.put(key, value);
       const content = await fs.readFile(`/base/path/${key}`, 'utf-8');
 
       expect(content).to.equal(value);
@@ -89,7 +89,7 @@ describe('LocalBucket', () => {
       const key = 'nested/folder/file.txt';
       const value = 'nested file content';
 
-      await bucket.set(key, value);
+      await bucket.put(key, value);
       const content = await fs.readFile(`/base/path/${key}`, 'utf-8');
 
       expect(content).to.equal(value);
@@ -99,7 +99,7 @@ describe('LocalBucket', () => {
       const bucket = new LocalBucket('/base/path');
 
       try {
-        await bucket.set('', 'value');
+        await bucket.put('', 'value');
         expect.fail('Expected an error to be thrown');
       } catch (error) {
         expect(error.message).to.equal('key is empty');

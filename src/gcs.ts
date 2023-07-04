@@ -38,7 +38,7 @@ export default class GCSBucket implements Bucket {
     return encoding ? data.toString(encoding) : data;
   }
 
-  async set(key: string, content: string | Uint8Array): Promise<void> {
+  async put(key: string, content: string | Uint8Array): Promise<void> {
     const file = this.bucket.file(this.path(key));
     await file.save(typeof content === 'string' ? content : Buffer.from(content));
   }
