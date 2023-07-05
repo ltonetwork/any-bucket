@@ -16,23 +16,23 @@
   "main": "./lib/index.js",
   "exports": {
     ".": {
-      "import": "./lib/index.js",
+      "default": "./lib/index.js",
       "types": "./lib/index.d.ts"
     },
     "./azure": {
-      "import": "./lib/azure.js",
+      "default": "./lib/azure.js",
       "types": "./lib/azure.d.ts"
     },
     "./gcs": {
-      "import": "./lib/gcs.js",
+      "default": "./lib/gcs.js",
       "types": "./lib/gcs.d.ts"
     },
     "./local": {
-      "import": "./lib/local.js",
+      "default": "./lib/local.js",
       "types": "./lib/local.d.ts"
     },
     "./s3": {
-      "import": "./lib/s3.js",
+      "default": "./lib/s3.js",
       "types": "./lib/s3.d.ts"
     }
   },
